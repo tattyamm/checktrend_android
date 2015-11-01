@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -76,6 +77,7 @@ public class MainActivityFragment extends Fragment {
     //http://dev.classmethod.jp/smartphone/android/android-tips-51-volley/
     private void requestJson(FragmentActivity fActivity) {
         final TextView textView = (TextView)fActivity.findViewById(R.id.textview);
+        final ListView listView = (ListView) fActivity.findViewById(R.id.listview);
 
         // Volley でリクエスト
         //TODO URLを分岐
@@ -89,6 +91,8 @@ public class MainActivityFragment extends Fragment {
 
                         //jsonにして、テーブル表示
                         String temp = "";
+                        ArrayList<String> listTitle = new ArrayList<>();
+                        ArrayList<String> listLink = new ArrayList<>();
                         try {
                             JSONArray items = response.getJSONObject("value").getJSONArray("items");
                             for (int i = 0; i < items.length(); i++) {
@@ -96,11 +100,19 @@ public class MainActivityFragment extends Fragment {
                                 String title = data.getString("title");
                                 String link = data.getString("link");
                                 temp = temp + "[" + title + "]" + "(" + link + ")";
+                                listTitle.add(title);
+                                listLink.add(link);
                             }
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            listTitle.add("結果が取得できませんでした");
                         }
-                        textView.setText(temp);
+
+                        //listに表示
+                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+                                getActivity(), android.R.layout.simple_list_item_1, listTitle
+                        );
+                        listView.setAdapter(arrayAdapter);
+
 
                     }
                 }, null));
