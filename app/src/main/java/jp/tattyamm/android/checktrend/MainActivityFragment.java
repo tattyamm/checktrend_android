@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +18,8 @@ import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -75,13 +78,30 @@ public class MainActivityFragment extends Fragment {
         final TextView textView = (TextView)fActivity.findViewById(R.id.textview);
 
         // Volley でリクエスト
+        //TODO URLを分岐
         String url = "http://checktrend.herokuapp.com/api/trend/google.json";
         mQueue.add(new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         //Log.d(TAG, "response : " + response.toString());
-                        textView.setText(response.toString());
+                        //textView.setText(response.toString());
+
+                        //jsonにして、テーブル表示
+                        String temp = "";
+                        try {
+                            JSONArray items = response.getJSONObject("value").getJSONArray("items");
+                            for (int i = 0; i < items.length(); i++) {
+                                JSONObject data = items.getJSONObject(i);
+                                String title = data.getString("title");
+                                String link = data.getString("link");
+                                temp = temp + "[" + title + "]" + "(" + link + ")";
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        textView.setText(temp);
+
                     }
                 }, null));
         mQueue.start();
