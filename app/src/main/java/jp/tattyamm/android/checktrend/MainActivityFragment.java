@@ -24,6 +24,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,6 +59,14 @@ public class MainActivityFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+        //google analytics
+        GoogleAnalytics analytics = GoogleAnalytics.getInstance(getActivity());
+        tracker.setScreenName("android main activity");
+
+        //初回の表示
+        reloadView(getActivity(), "Googleトレンド", "http://checktrend.herokuapp.com/api/trend/google.json");
+
+        //ボタンが押された時の表示
         Button button01 = (Button)getActivity().findViewById(R.id.selectButton01);
         Button button02 = (Button)getActivity().findViewById(R.id.selectButton02);
         Button button03 = (Button)getActivity().findViewById(R.id.selectButton03);
@@ -64,24 +75,28 @@ public class MainActivityFragment extends Fragment {
         button01.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sendTrackerButton(tracker, "button01");
                 reloadView(getActivity(), "Googleトレンド", "http://checktrend.herokuapp.com/api/trend/google.json");
             }
         });
         button02.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                reloadView(getActivity(), "Yahoo急上昇", "http://checktrend.herokuapp.com/api/trend/yahoo.json");
+                sendTrackerButton(tracker, "button02");
+                reloadView(getActivity(), "Yahoo急上昇ワード", "http://checktrend.herokuapp.com/api/trend/yahoo.json");
             }
         });
         button03.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sendTrackerButton(tracker, "button03");
                 reloadView(getActivity(), "twitterトレンド", "http://checktrend.herokuapp.com/api/trend/twitter.json");
             }
         });
         button04.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                sendTrackerButton(tracker, "button04");
                 reloadView(getActivity(), "Amazonランキング", "http://checktrend.herokuapp.com/api/trend/amazon.json");
             }
         });
@@ -148,9 +163,9 @@ public class MainActivityFragment extends Fragment {
                         });
                     }
                 },
-                new Response.ErrorListener(){
+                new Response.ErrorListener() {
                     @Override
-                    public void onErrorResponse(VolleyError error){
+                    public void onErrorResponse(VolleyError error) {
                         pDialog.hide();
 
                         //listに表示
@@ -172,4 +187,11 @@ public class MainActivityFragment extends Fragment {
         startActivity(i);
     }
 
+    public void sendTrackerButton(Tracker tracker, String label) {
+        tracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Button")
+                .setAction("click")
+                .setLabel(label)
+                .build());
+    }
 }
