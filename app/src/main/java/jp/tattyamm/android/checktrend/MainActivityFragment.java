@@ -1,12 +1,16 @@
 package jp.tattyamm.android.checktrend;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -24,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import android.widget.AdapterView.OnItemClickListener;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -91,8 +96,8 @@ public class MainActivityFragment extends Fragment {
 
                         //jsonにして、テーブル表示
                         String temp = "";
-                        ArrayList<String> listTitle = new ArrayList<>();
-                        ArrayList<String> listLink = new ArrayList<>();
+                        final ArrayList<String> listTitle = new ArrayList<>();
+                        final ArrayList<String> listLink = new ArrayList<>();
                         try {
                             JSONArray items = response.getJSONObject("value").getJSONArray("items");
                             for (int i = 0; i < items.length(); i++) {
@@ -113,10 +118,23 @@ public class MainActivityFragment extends Fragment {
                         );
                         listView.setAdapter(arrayAdapter);
 
-
+                        //listクリック処理
+                        listView.setOnItemClickListener(new OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view,
+                                                    int position, long id) {
+                                jumpToBrowser(listLink.get(position));
+                            }
+                        });
                     }
                 }, null));
         mQueue.start();
+    }
+
+    public void jumpToBrowser(String urlText) {
+        Uri uri = Uri.parse(urlText);
+        Intent i = new Intent(Intent.ACTION_VIEW,uri);
+        startActivity(i);
     }
 
 }
