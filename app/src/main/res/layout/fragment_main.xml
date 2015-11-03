@@ -23,7 +23,7 @@
                 android:id="@+id/selectButton01"
                 android:layout_width ="fill_parent"
                 android:layout_height="fill_parent"
-                android:text="google"
+                android:text="Google"
                 android:textSize="15sp"
                 android:layout_weight="1">
             </Button>
@@ -31,7 +31,23 @@
                 android:id="@+id/selectButton02"
                 android:layout_width ="fill_parent"
                 android:layout_height="fill_parent"
-                android:text="yahoo"
+                android:text="Yahoo"
+                android:textSize="15sp"
+                android:layout_weight="1">
+            </Button>
+            <Button
+                android:id="@+id/selectButton03"
+                android:layout_width ="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="Twitter"
+                android:textSize="15sp"
+                android:layout_weight="1">
+            </Button>
+            <Button
+                android:id="@+id/selectButton04"
+                android:layout_width ="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="Amazon"
                 android:textSize="15sp"
                 android:layout_weight="1">
             </Button>
