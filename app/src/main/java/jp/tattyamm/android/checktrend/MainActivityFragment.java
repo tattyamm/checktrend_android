@@ -64,7 +64,7 @@ public class MainActivityFragment extends Fragment {
         tracker.setScreenName("android main activity");
 
         //初回の表示
-        reloadView(getActivity(), "Googleトレンド", "http://checktrend.herokuapp.com/api/trend/google.json");
+        reloadView(getActivity(), getString(R.string.view_title01), getString(R.string.trendurl01));
 
         //ボタンが押された時の表示
         Button button01 = (Button)getActivity().findViewById(R.id.selectButton01);
@@ -76,28 +76,28 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 sendTrackerButton(tracker, "button01");
-                reloadView(getActivity(), "Googleトレンド", "http://checktrend.herokuapp.com/api/trend/google.json");
+                reloadView(getActivity(), getString(R.string.view_title01), getString(R.string.trendurl01));
             }
         });
         button02.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendTrackerButton(tracker, "button02");
-                reloadView(getActivity(), "Yahoo急上昇ワード", "http://checktrend.herokuapp.com/api/trend/yahoo.json");
+                reloadView(getActivity(), getString(R.string.view_title02), getString(R.string.trendurl02));
             }
         });
         button03.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendTrackerButton(tracker, "button03");
-                reloadView(getActivity(), "twitterトレンド", "http://checktrend.herokuapp.com/api/trend/twitter.json");
+                reloadView(getActivity(), getString(R.string.view_title03), getString(R.string.trendurl03));
             }
         });
         button04.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendTrackerButton(tracker, "button04");
-                reloadView(getActivity(), "Amazonランキング", "http://checktrend.herokuapp.com/api/trend/amazon.json");
+                reloadView(getActivity(), getString(R.string.view_title04), getString(R.string.trendurl04));
             }
         });
     }
@@ -114,7 +114,7 @@ public class MainActivityFragment extends Fragment {
         final ListView listView = (ListView) fActivity.findViewById(R.id.listview);
 
         final ProgressDialog pDialog = new ProgressDialog(fActivity);
-        pDialog.setMessage("Loading...");
+        pDialog.setMessage(getString(R.string.message_loading));
         pDialog.show();
 
         // Volley でリクエスト
@@ -143,7 +143,7 @@ public class MainActivityFragment extends Fragment {
                             }
                         } catch (JSONException e) {
                             //エラー処理
-                            listTitle.add("読み込みエラーが発生しました");
+                            listTitle.add(getString(R.string.message_error_loading));
                             listLink.add("https://www.google.co.jp/trends/");
                         }
 
@@ -169,9 +169,8 @@ public class MainActivityFragment extends Fragment {
                         pDialog.hide();
 
                         //listに表示
-                        String errorMsg = "通信に失敗しました。時間を置いて再度接続してください。";
                         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-                                getActivity(), android.R.layout.simple_list_item_1, Arrays.asList(errorMsg)
+                                getActivity(), android.R.layout.simple_list_item_1, Arrays.asList(getString(R.string.message_error_loading_retry))
                         );
                         listView.setAdapter(arrayAdapter);
 
