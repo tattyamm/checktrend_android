@@ -37,9 +37,6 @@ import java.util.Arrays;
 
 import android.widget.AdapterView.OnItemClickListener;
 
-/**
- * A placeholder fragment containing a simple view.
- */
 public class MainActivityFragment extends Fragment {
 
     public MainActivityFragment() {
@@ -61,6 +58,7 @@ public class MainActivityFragment extends Fragment {
 
         //google analytics
         GoogleAnalytics analytics = GoogleAnalytics.getInstance(getActivity());
+        final Tracker tracker = analytics.newTracker("UA-XXXX-Y");
         tracker.setScreenName("android main activity");
 
         //初回の表示
@@ -108,7 +106,6 @@ public class MainActivityFragment extends Fragment {
         requestJson(fActivity, url);
     }
 
-    //http://dev.classmethod.jp/smartphone/android/android-tips-51-volley/
     private void requestJson(FragmentActivity fActivity, String url) {
         final TextView textView = (TextView)fActivity.findViewById(R.id.textview);
         final ListView listView = (ListView) fActivity.findViewById(R.id.listview);
@@ -122,9 +119,6 @@ public class MainActivityFragment extends Fragment {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        //Log.d(TAG, "response : " + response.toString());
-                        //textView.setText(response.toString());
-
                         pDialog.hide();
 
                         //jsonにして、テーブル表示
