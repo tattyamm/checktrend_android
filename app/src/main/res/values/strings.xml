@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Check Trend</string>
     <string name="hello_world">Hello world!</string>
@@ -6,10 +7,13 @@
     <string name="view_title02">Yahoo Trending Now Lists\n(almost every day)</string>
     <string name="view_title03">twitter trending</string>
     <string name="view_title04">Amazon Bestsellers (past 24 hours)</string>
-    <string name="trendurl01">http://checktrend.herokuapp.com/api/trend/google.json</string>
-    <string name="trendurl02">http://checktrend.herokuapp.com/api/trend/yahoo.json</string>
-    <string name="trendurl03">http://checktrend.herokuapp.com/api/trend/twitter.json</string>
-    <string name="trendurl04">http://checktrend.herokuapp.com/api/trend/amazon.json</string>
+
+    <string name="trend_url_base">http://checktrend.herokuapp.com/</string>
+    <string name="trendurl01">google</string>
+    <string name="trendurl02">yahoo</string>
+    <string name="trendurl03">twitter</string>
+    <string name="trendurl04">amazon</string>
+
     <string name="message_loading">Loading...</string>
     <string name="message_error_loading">Failed to load data.</string>
     <string name="message_error_loading_retry">Failed to load data.</string>

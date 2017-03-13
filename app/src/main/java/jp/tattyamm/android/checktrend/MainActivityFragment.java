@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -16,38 +15,35 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+//import com.google.android.gms.analytics.GoogleAnalytics;
+//import com.google.android.gms.analytics.HitBuilders;
+//import com.google.android.gms.analytics.Tracker;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-import android.widget.AdapterView.OnItemClickListener;
+import jp.tattyamm.android.checktrend.Entity.Article;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+import jp.tattyamm.android.checktrend.Entity.Trend;
 
 public class MainActivityFragment extends Fragment {
 
     public MainActivityFragment() {
     }
 
-    private RequestQueue mQueue;
+    private Retrofit retrofit;
+    private ApiInterface service;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
 
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
@@ -57,9 +53,15 @@ public class MainActivityFragment extends Fragment {
         super.onStart();
 
         //google analytics
-        GoogleAnalytics analytics = GoogleAnalytics.getInstance(getActivity());
-        final Tracker tracker = analytics.newTracker("UA-XXXX-Y");
-        tracker.setScreenName("android main activity");
+        //GoogleAnalytics analytics = GoogleAnalytics.getInstance(getActivity());
+        //final Tracker tracker = analytics.newTracker("UA-XXXX-Y");
+        //tracker.setScreenName("android main activity");
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl(getString(R.string.trend_url_base))
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        service = retrofit.create(ApiInterface.class);
 
         //初回の表示
         reloadView(getActivity(), getString(R.string.view_title01), getString(R.string.trendurl01));
@@ -73,28 +75,28 @@ public class MainActivityFragment extends Fragment {
         button01.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendTrackerButton(tracker, "button01");
+                //sendTrackerButton(tracker, "button01");
                 reloadView(getActivity(), getString(R.string.view_title01), getString(R.string.trendurl01));
             }
         });
         button02.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendTrackerButton(tracker, "button02");
+                //sendTrackerButton(tracker, "button02");
                 reloadView(getActivity(), getString(R.string.view_title02), getString(R.string.trendurl02));
             }
         });
         button03.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendTrackerButton(tracker, "button03");
+                //sendTrackerButton(tracker, "button03");
                 reloadView(getActivity(), getString(R.string.view_title03), getString(R.string.trendurl03));
             }
         });
         button04.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendTrackerButton(tracker, "button04");
+                //sendTrackerButton(tracker, "button04");
                 reloadView(getActivity(), getString(R.string.view_title04), getString(R.string.trendurl04));
             }
         });
@@ -106,7 +108,7 @@ public class MainActivityFragment extends Fragment {
         requestJson(fActivity, url);
     }
 
-    private void requestJson(FragmentActivity fActivity, String url) {
+    private void requestJson(FragmentActivity fActivity, String url_path) {
         final TextView textView = (TextView)fActivity.findViewById(R.id.textview);
         final ListView listView = (ListView) fActivity.findViewById(R.id.listview);
 
@@ -114,64 +116,59 @@ public class MainActivityFragment extends Fragment {
         pDialog.setMessage(getString(R.string.message_loading));
         pDialog.show();
 
-        // Volley でリクエスト
-        mQueue.add(new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        pDialog.hide();
+        // リクエスト
+        // https://github.com/cookpad/cookpad-internship-2016-summer/blob/master/android/lesson08.md
+        // http://blog.techium.jp/entry/2016/04/10/090000
+        Call<Trend> call = service.getTrend(url_path);
+        call.enqueue(new Callback<Trend>() {
+            @Override
+            public void onResponse(Call<Trend> call, Response<Trend> response) {
+                pDialog.hide();
 
-                        //jsonにして、テーブル表示
-                        String temp = "";
-                        final ArrayList<String> listTitle = new ArrayList<>();
-                        final ArrayList<String> listLink = new ArrayList<>();
-                        try {
-                            JSONArray items = response.getJSONObject("value").getJSONArray("items");
-                            for (int i = 0; i < items.length(); i++) {
-                                JSONObject data = items.getJSONObject(i);
-                                String title = data.getString("title");
-                                String link = data.getString("link");
-                                temp = temp + "[" + title + "]" + "(" + link + ")";
-                                listTitle.add(title);
-                                listLink.add(link);
-                            }
-                        } catch (JSONException e) {
-                            //エラー処理
-                            listTitle.add(getString(R.string.message_error_loading));
-                            listLink.add("https://www.google.co.jp/trends/");
-                        }
-
-                        //listに表示
-                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-                                getActivity(), android.R.layout.simple_list_item_1, listTitle
-                        );
-                        listView.setAdapter(arrayAdapter);
-
-                        //listクリック処理
-                        listView.setOnItemClickListener(new OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view,
-                                                    int position, long id) {
-                                jumpToBrowser(listLink.get(position));
-                            }
-                        });
+                final ArrayList<String> listTitle = new ArrayList<>();
+                final ArrayList<String> listLink = new ArrayList<>();
+                try {
+                    Trend container = response.body();
+                    Log.d("tracking", container.getValue().getTitle());
+                    List<Article> articleList = container.getValue().getArticle();
+                    for (Article article : articleList) {
+                        String title = article.getTitle();
+                        String link = article.getLink();
+                        listTitle.add(title);
+                        listLink.add(link);
                     }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        pDialog.hide();
-
-                        //listに表示
-                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
-                                getActivity(), android.R.layout.simple_list_item_1, Arrays.asList(getString(R.string.message_error_loading_retry))
-                        );
-                        listView.setAdapter(arrayAdapter);
-
-                    }
+                }  catch (Exception e) {
+                    //エラー処理
+                    listTitle.add(getString(R.string.message_error_loading));
+                    listLink.add("https://www.google.co.jp/trends/");
                 }
-        ));
-        mQueue.start();
+
+                //listに表示
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+                        getActivity(), android.R.layout.simple_list_item_1, listTitle
+                );
+                listView.setAdapter(arrayAdapter);
+
+                //listクリック処理
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view,
+                                            int position, long id) {
+                        jumpToBrowser(listLink.get(position));
+                    }
+                });
+            }
+            @Override
+            public void onFailure(Call<Trend> call, Throwable t) {
+                Log.d("tracking", "Failed to request");
+                //listに表示
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+                        getActivity(), android.R.layout.simple_list_item_1, Arrays.asList(getString(R.string.message_error_loading_retry))
+                );
+                listView.setAdapter(arrayAdapter);
+            }
+        });
+
     }
 
     public void jumpToBrowser(String urlText) {
@@ -179,7 +176,7 @@ public class MainActivityFragment extends Fragment {
         Intent i = new Intent(Intent.ACTION_VIEW,uri);
         startActivity(i);
     }
-
+/*
     public void sendTrackerButton(Tracker tracker, String label) {
         tracker.send(new HitBuilders.EventBuilder()
                 .setCategory("Button")
@@ -187,4 +184,5 @@ public class MainActivityFragment extends Fragment {
                 .setLabel(label)
                 .build());
     }
+*/
 }
