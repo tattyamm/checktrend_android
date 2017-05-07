@@ -7,8 +7,8 @@ android {
         applicationId "jp.tattyamm.android.checktrend"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 14
-        versionName "2.3"
+        versionCode 15
+        versionName "2.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -30,4 +30,9 @@ dependencies {
 
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
+
+    compile 'com.google.android.gms:play-services-analytics:9.2.0'
+
 }
+
+apply plugin: 'com.google.gms.google-services'

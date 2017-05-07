@@ -20,6 +20,10 @@ import android.widget.TextView;
 //import com.google.android.gms.analytics.HitBuilders;
 //import com.google.android.gms.analytics.Tracker;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,6 +44,7 @@ public class MainActivityFragment extends Fragment {
 
     private Retrofit retrofit;
     private ApiInterface service;
+    private Tracker mTracker;   //本来はローカルな箇所で宣言すべきではない
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -53,9 +58,11 @@ public class MainActivityFragment extends Fragment {
         super.onStart();
 
         //google analytics
-        //GoogleAnalytics analytics = GoogleAnalytics.getInstance(getActivity());
-        //final Tracker tracker = analytics.newTracker("UA-XXXX-Y");
-        //tracker.setScreenName("android main activity");
+        if (mTracker == null) {
+            GoogleAnalytics analytics = GoogleAnalytics.getInstance(getActivity());
+            // To enable debug logging use: adb shell setprop log.tag.GAv4 DEBUG
+            mTracker = analytics.newTracker(R.xml.global_tracker);
+        }
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(getString(R.string.trend_url_base))
@@ -63,7 +70,7 @@ public class MainActivityFragment extends Fragment {
                 .build();
         service = retrofit.create(ApiInterface.class);
 
-        //初回の表示
+        //初回の表示は固定で出す
         reloadView(getActivity(), getString(R.string.view_title01), getString(R.string.trendurl01));
 
         //ボタンが押された時の表示
@@ -75,28 +82,28 @@ public class MainActivityFragment extends Fragment {
         button01.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //sendTrackerButton(tracker, "button01");
+                sendTrackerButton(mTracker, "button01");
                 reloadView(getActivity(), getString(R.string.view_title01), getString(R.string.trendurl01));
             }
         });
         button02.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //sendTrackerButton(tracker, "button02");
+                sendTrackerButton(mTracker, "button02");
                 reloadView(getActivity(), getString(R.string.view_title02), getString(R.string.trendurl02));
             }
         });
         button03.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //sendTrackerButton(tracker, "button03");
+                sendTrackerButton(mTracker, "button03");
                 reloadView(getActivity(), getString(R.string.view_title03), getString(R.string.trendurl03));
             }
         });
         button04.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //sendTrackerButton(tracker, "button04");
+                sendTrackerButton(mTracker, "button04");
                 reloadView(getActivity(), getString(R.string.view_title04), getString(R.string.trendurl04));
             }
         });
@@ -176,7 +183,7 @@ public class MainActivityFragment extends Fragment {
         Intent i = new Intent(Intent.ACTION_VIEW,uri);
         startActivity(i);
     }
-/*
+
     public void sendTrackerButton(Tracker tracker, String label) {
         tracker.send(new HitBuilders.EventBuilder()
                 .setCategory("Button")
@@ -184,5 +191,5 @@ public class MainActivityFragment extends Fragment {
                 .setLabel(label)
                 .build());
     }
-*/
+
 }
