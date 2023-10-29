@@ -1,2 +1,0 @@
-include ':app'
-rootProject.name = "checktrend_android_2020"
