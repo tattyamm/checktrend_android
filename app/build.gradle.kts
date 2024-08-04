@@ -5,14 +5,14 @@ plugins {
 
 android {
     namespace = "jp.tattyamm.android.checktrend"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "jp.tattyamm.android.checktrend"
         minSdk = 23
-        targetSdk = 33
-        versionCode = 21
-        versionName = "5.0"
+        targetSdk = 35
+        versionCode = 22
+        versionName = "5.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -27,6 +27,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        create("no-signature") {
         }
     }
     compileOptions {
